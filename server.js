@@ -4,7 +4,7 @@ const http = require('http');
 const socketio = require('socket.io');
 const sign_type = require('./sign_type');
 
-const TIMEOUT_BETWEEN_EPOCHS_MS = 500;
+const TIMEOUT_BETWEEN_EPOCHS_MS = 100;
 const PORT = 8001;
 
 // util function to sleep for a given ms
@@ -28,11 +28,21 @@ async function run() {
     });
   });
 
-  let numTrainingIterations = 10;
+  let numTrainingIterations = 2500;
   for (var i = 0; i < numTrainingIterations; i++) {
     console.log(`Training iteration : ${i+1} / ${numTrainingIterations}`);
     await sign_type.model.fitDataset(sign_type.trainingDataASL, {epochs: 1});
     console.log('accuracyPerClass', await sign_type.evaluateASL(true));
+    try {
+      await sign_type.model.save('file://my-model-1');
+      console.log('model saved');
+      // Missing code where you would handle `tsModelTraining`
+    } 
+    catch (error) {
+      // Handle the error in here
+      console.log(error);
+    }
+    
     await sleep(TIMEOUT_BETWEEN_EPOCHS_MS);
   }
 

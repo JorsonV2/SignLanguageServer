@@ -132,7 +132,24 @@ const testValidationData =
         .map(csvTransform)
         .batch(TEST_DATA_LENGTH);
 
-const model = tf.sequential();
+let model = null
+
+
+
+async function setModel(){
+    return await tf.loadLayersModel("file://my-model-1")
+}
+
+try {
+    if (fs.existsSync("file://my-model-1")) {
+        model = tf.loadLayersModel("file://my-model-1")
+    }
+    else
+        model = tf.sequential();
+  } catch(err) {
+    
+    console.error(err)
+}
 
 model.add(tf.layers.dense({ units: 392, activation: 'relu', inputShape: [784] }));
 model.add(tf.layers.dense({ units: 196, activation: 'relu' }));
